@@ -14,7 +14,12 @@ from validators import (
     validate_fluentd,
     validate_jaeger,
 )
-from utils import microk8s_enable, wait_for_pod_state, microk8s_disable, microk8s_reset
+from utils import (
+    microk8s_enable,
+    wait_for_pod_state,
+    microk8s_disable,
+    microk8s_reset
+)
 from subprocess import Popen, PIPE, STDOUT, CalledProcessError
 
 
@@ -74,21 +79,16 @@ class TestAddons(object):
             print("GPU tests are only relevant in x86 architectures")
             return
 
-        print("Enabling dns")
-        microk8s_enable("dns")
         try:
             print("Enabling gpu")
             gpu_enable_outcome = microk8s_enable("gpu")
         except CalledProcessError:
             # Failed to enable gpu. Skip the test.
-            print("Disabling DNS")
-            microk8s_disable("dns")
+            print("Could not enable GPU support")
             return
         validate_gpu()
         print("Disable gpu")
         microk8s_disable("gpu")
-        print("Disabling DNS")
-        microk8s_disable("dns")
 
     def test_istio(self):
         """
