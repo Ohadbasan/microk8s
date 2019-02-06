@@ -1,4 +1,5 @@
 import pytest
+import os
 import platform
 
 from validators import (
@@ -21,6 +22,8 @@ from utils import (
     microk8s_reset
 )
 from subprocess import Popen, PIPE, STDOUT, CalledProcessError
+
+under_time_pressure = os.environ.get('UNDER_TIME_PRESURE', 'False')
 
 
 class TestAddons(object):
@@ -126,22 +129,25 @@ class TestAddons(object):
         Test jaeger, prometheus and fluentd.
 
         """
-        print("Enabling fluentd")
-        microk8s_enable("fluentd")
-        print("Enabling prometheus")
-        microk8s_enable("prometheus")
-        print("Enabling jaeger")
-        microk8s_enable("jaeger")
-        print("Validating the Jaeger operator")
-        validate_jaeger()
-        print("Validating Prometheus")
-        validate_prometheus()
-        print("Validating the Fluentd")
-        validate_fluentd()
-        print("Disabling jaeger")
-        microk8s_disable("jaeger")
-        print("Disabling fluentd")
-        microk8s_disable("fluentd")
-        print("Disabling prometheus")
-        microk8s_disable("prometheus")
+        if under_time_pressure == 'False':
+            print("Enabling fluentd")
+            microk8s_enable("fluentd")
+            print("Enabling prometheus")
+            microk8s_enable("prometheus")
+            print("Enabling jaeger")
+            microk8s_enable("jaeger")
+            print("Validating the Jaeger operator")
+            validate_jaeger()
+            print("Validating Prometheus")
+            validate_prometheus()
+            print("Validating the Fluentd")
+            validate_fluentd()
+            print("Disabling jaeger")
+            microk8s_disable("jaeger")
+            print("Disabling fluentd")
+            microk8s_disable("fluentd")
+            print("Disabling prometheus")
+            microk8s_disable("prometheus")
+        else:
+            print('Skipping jaeger, prometheus and fluentd tests')
 
